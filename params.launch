@@ -1,0 +1,11 @@
+<launch>
+  <!-- Load the map -->
+  <arg name="map_file" default="maps/simple_maze.yaml">
+  <node name="map_server" pkg="map_server" type="map_server" args="$(map_file)" />
+  
+  <!-- Robot starting position info -->
+  <arg name="start_x" default="0.0" />
+  <arg name="start_y" default="0.0" />
+  <arg name="start_orientation" default="0.0" />
+  
+  

@@ -92,6 +92,7 @@ namespace RRT_Planner {
         plan.clear();
         
         // Make sure that the goal header frame is correct
+		// Goals are set within rviz
         if (goal.header.frame_id != costmap_ros_->getGlobalFrameID()) {
             ROS_ERROR("This planner will only accept goals in the %s frame,"
                     "the goal was sent to the %s frame.", 
@@ -100,7 +101,31 @@ namespace RRT_Planner {
             return false;
         }
         return false;
+		
+		tf::Stamped<tf::Pose> goal_tf;
+		tf::Stamped<tf::Pose> start_tf;
+		
+		poseStampedMsgToTF(goal, goal_tf);
+		poseStampedMsgToTF(start, start_tf);
+		
+		float start_x = start.pose.position.x;
+		float start_y = start.pose.position.y;
+		
+		float goal_x = goal.pose.position.x;
+		float goal_y = goal.pose.position.y;
+		
+		// Get the starting and goal yaws (pitch and roll are useless here)
+		double useless_pitch, useless_roll, goal_yaw, start_yaw;
+		start_tf.getBasis().getEulerYPR(start_yaw, useless_pitch, useless_roll);
+		goal_tf.getBasis().getEulerYPR(goal_yaw, useless_pitch, useless_roll);
+		
+		// TODO kick off the RRT algorithm
+		
     }
+	
+	vector<Vertex> RRTPlanner::find_path(std::pair<float, float> start, std::pair<float, float> goal) {
+		vector<Vertex> best_path;
+	}
 	
 	int RRTPlanner::get_closest_vertex(std::pair<float, float> random_point) {
 		// Set our closest Vertex index to our root, since we know that it exists
@@ -209,6 +234,8 @@ namespace RRT_Planner {
 			return true;
 		return false;
 	}
+	
+	
 }
 
 // Register as a BaseGlobalPlanner plugin
