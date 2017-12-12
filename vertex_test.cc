@@ -1,9 +1,9 @@
 /*
  * @copyright Copyright (C) 2017, Jessica Howard
  * @author Jessica Howard
- * @file turtlebot_rrt/src/vertex.cc
+ * @file turtlebot_rrt/test/vertex_test.cc
  *
- * @brief Small class to maintain information held in vertices
+ * @brief Unit tests for the RRT path planning algorithm
  *
  * @license 3-Clause BSD License
  * Redistribution and use in source and binary forms, with or without
@@ -31,38 +31,49 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "turtlebot_rrt/vertex.h"
+ #include "mock_vertex.h"
+ #include "gmock/gmock.h"
+ #include "gtest/gtest.h"
 
-namespace turtlebot_rrt {
-  Vertex::Vertex(float x, float y, int index, int parent_index) {
-    x_ = x;
-    y_ = y;
-    index_ = index;
-    parent_index_ = parent_index;
-  }
+ using ::testing::AtLeast;
 
-  void Vertex::set_location(float x, float, y) {
-    x_ = x;
-    y_ = y;
-  }
+ TEST(VertexTest, SingleVertex) {
+  MockVertex vertex(5.0, 7.5, 3, 2);
+  std::pair<float, float> location(5.0, 7.5);
 
-  void Vertex::set_index(int index) {
-    index_ = index;
-  }
+  // test get location
+  ON_CALL(vertex, get_location())
+    .Field(&std::vector::first, FloatEq(5.0));
+    .Field(&std::vector::second, FloatEq(7.5));
 
-  void Vertex::set_parent(int parent_index) {
-    parent_index_ = parent_index;
-  }
+  // test get index
+  ON_CALL(vertex, get_index())
+    .WillByDefault(Return(3));
 
-  std::pair<float, float> Vertex::get_location() {
-    return std::pair<float, float>(x_, y_);
-  }
+  // test get_parent
+  ON_CALL(vertex, get_parent())
+    .WillByDefault(Return(2));
 
-  int Vertex::get_index() {
-    return index_;
-  }
+  // use setter methods and retest
+  ON_CALL(vertex, set_location(3.0, 6.23))
+    .WillByDefault(Return());
 
-  int Vertex::get_parent() {
-    return parent_index_;
-  }
-}  // namespace turtlebot_rrt
+  ON_CALL(vertex, set_index(12))
+    .WillByDefault(Return());
+
+  ON_CALL(vertex, set_parent(1))
+    .WillByDefault(Return());
+
+  // test get location
+  ON_CALL(vertex, get_location())
+    .Field(&std::vector::first, FloatEq(3.0));
+    .Field(&std::vector::second, FloatEq(6.23));
+
+  // test get index
+  ON_CALL(vertex, get_index())
+    .WillByDefault(Return(12));
+
+  // test get_parent
+  ON_CALL(vertex, get_parent())
+    .WillByDefault(Return(1));
+ }
